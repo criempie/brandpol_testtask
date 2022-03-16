@@ -1,13 +1,13 @@
 import { StyleSheet, View, Text } from "react-native";
 
-export const Temperature = () => {
+export const Temperature = ({ temperature, description }) => {
     return (
         <View style={styles.container}>
             <View style={styles.temperatureContainer}>
-                <Text style={styles.temperature}>6</Text>
+                <Text style={styles.temperature}>{temperature}</Text>
                 <Text style={styles.degree}>°C</Text>
             </View>
-            <Text style={styles.description}>Ясно</Text>
+            <Text style={styles.description}>{description.description.charAt(0).toUpperCase() + description.description.slice(1)}</Text>
         </View>
     )
 }
