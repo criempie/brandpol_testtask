@@ -5,21 +5,33 @@ import { useEffect, useState } from "react";
 import * as Location from "expo-location";
 import axios from "axios";
 import { Loader } from "../components/Loader";
+import { WeatherContext } from "../context";
 
 export const Main = () => {
     const [coords, setCoords] = useState();
     const [loader, setLoader] = useState(false);
 
     const [weather, setWeather] = useState({
-        temp: null,
         weather: [{
             id: null,
-            main: null,
-            description: null,
-            icon: null
-        }]
+            main: null,        // Описание на английском
+            description: null, // Описание погоды на русском
+            icon: null         // Название иконки
+        }],
+        main: {
+            temp: null,        // Температура
+            feels_like: null,  // Ощущение
+            pressure: null,    // Давление
+            humidity: null     // Влажность
+        },
+        wind: {
+            speed: null,       // Скорость
+            deg: null,         // Угол
+        },
+        name: null             // Название города
     });
-    const urlAPI = "https://api.openweathermap.org/data/2.5/onecall";
+
+    const urlAPI = "https://api.openweathermap.org/data/2.5/weather";
     const keyAPI = "c620e70db8c6dd36dc1e728ce583d185";
 
     useEffect(() => {
@@ -40,7 +52,7 @@ export const Main = () => {
             setLoader(true);
             getWeather(coords)
                 .then(res => {
-                    setWeather(res.data.current);
+                    weatherFormat(res.data);
                     setLoader(false);
                 })
                 .catch(e => {
@@ -78,18 +90,31 @@ export const Main = () => {
                 appid: keyAPI,
                 lang: "ru",
                 units: "metric",
-                exclude: "minutely,hourly,daily,alerts"
+                // exclude: "minutely,hourly,daily,alerts"
             }
         })
     }
 
+    function weatherFormat(newWeather) {
+        const _weather = Object.assign({}, weather);
+        Object.keys(_weather).forEach(item => {
+            _weather[item] = newWeather[item];
+        })
+
+        setWeather(_weather);
+    }
+
     return (
-        <>
-            <Header/>
+        <WeatherContext.Provider value={weather}>
+            <Header />
             {/*исправить "|| !weather.temp" когда появится хранилище*/}
-            {loader || !weather.temp
+            {loader || !weather.main.temp
                 ? <Loader/>
-                : <><Temperature temperature={weather.temp} description={weather.weather[0]}/><Detail/></>}
-        </>
+                : <>
+                    <Temperature temperature={weather.main.temp} description={weather.weather[0]}/>
+                    <Detail />
+                </>
+            }
+        </WeatherContext.Provider>
     );
 };
