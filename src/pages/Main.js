@@ -1,23 +1,28 @@
-import { Header } from "../components/Header";
-import { Temperature } from "../components/Temperature";
-import { Detail } from "../components/Detail/Detail";
-import { useEffect, useState } from "react";
-import * as Location from "expo-location";
-import axios from "axios";
-import { Loader } from "../components/Loader";
-import { WeatherContext } from "../context";
+import { Header }                                          from "../components/Header";
+import { Temperature }                                     from "../components/Temperature";
+import { Detail }                                          from "../components/Detail/Detail";
+import { useEffect, useState }                             from "react";
+import * as Location                                       from "expo-location";
+import axios                                               from "axios";
+import { Loader }                                          from "../components/Loader";
+import { WeatherContext }                                  from "../context";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useNavigate }  from "react-router-native";
+import { globalStyles } from "../globalStyles";
 
 export const Main = () => {
-    const [coords, setCoords] = useState();
-    const [loader, setLoader] = useState(false);
+    const [ coords, setCoords ] = useState();
+    const [ loader, setLoader ] = useState(false);
 
-    const [weather, setWeather] = useState({
-        weather: [{
+    const navigator = useNavigate();
+
+    const [ weather, setWeather ] = useState({
+        weather: [ {
             id: null,
             main: null,        // Описание на английском
             description: null, // Описание погоды на русском
             icon: null         // Название иконки
-        }],
+        } ],
         main: {
             temp: null,        // Температура
             feels_like: null,  // Ощущение
@@ -60,14 +65,14 @@ export const Main = () => {
                     setLoader(false);
                 })
         }
-    }, [coords])
+    }, [ coords ])
 
     /**
      * Получение данных геопозиции
      * @returns {Promise<boolean|LocationObject>}
      */
     async function getGeoData() {
-        const {granted} = await Location.requestForegroundPermissionsAsync();
+        const { granted } = await Location.requestForegroundPermissionsAsync();
 
         if (granted) {
             return Location.getCurrentPositionAsync();
@@ -105,15 +110,22 @@ export const Main = () => {
     }
 
     return (
-        <WeatherContext.Provider value={weather}>
-            <Header />
-            {/*исправить "|| !weather.temp" когда появится хранилище*/}
-            {loader || !weather.main.temp
-                ? <Loader/>
-                : <>
-                    <Temperature temperature={weather.main.temp} description={weather.weather[0]}/>
-                    <Detail />
-                </>
+        <WeatherContext.Provider value={ weather }>
+            <Header>
+                <TouchableOpacity onPress={ () => navigator('/cities') }>
+                    <Image source={ require("../../assets/plus-icon.png") } style={ globalStyles.icon }/>
+                </TouchableOpacity>
+                <Text style={ globalStyles.h1 }>{ weather.name }</Text>
+                <View style={ globalStyles.icon }/>
+            </Header>
+            {/*исправить "|| !weather.main.temp" когда появится хранилище*/ }
+            { loader || !weather.main.temp
+              ? <Loader/>
+              : <>
+                  <Temperature temperature={ weather.main.temp }
+                               description={ weather.weather[0] }/>
+                  <Detail/>
+              </>
             }
         </WeatherContext.Provider>
     );

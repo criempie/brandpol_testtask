@@ -1,17 +1,10 @@
-import { StyleSheet, TouchableOpacity, Image, Text, View } from "react-native";
-import { useContext } from "react";
-import { WeatherContext } from "../context";
+import { StyleSheet, View } from "react-native";
 
-export const Header = () => {
-    const { name } = useContext(WeatherContext);
+export const Header = ({ children }) => {
 
     return (
-        <View style={styles.body}>
-            <TouchableOpacity onPress={() => console.log("press")}>
-                <Image source={require("../../assets/plus-icon.png")} style={styles.icon}/>
-            </TouchableOpacity>
-            <Text style={styles.cityName}>{name}</Text>
-            <View style={styles.icon}></View>
+        <View style={ styles.body }>
+            {children}
         </View>
     )
 }
@@ -27,14 +20,5 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "rgba(41,143,184,1)",
-    },
-
-    cityName: {
-        fontSize: 24,
-    },
-
-    icon: {
-        width: 32,
-        height: 32,
     }
 })
