@@ -1,11 +1,15 @@
-import { useState }                                                         from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Modal } from "react-native";
-import { Card }                                                             from "../components/Card";
-import { FindCityModal }                                                    from "../components/FindCityModal";
-import { Header }                                                           from "../components/Header";
-import { useNavigate }                                                      from "react-router-native";
-import { globalStyles }                                                     from "../globalStyles";
-import { SearchBar }                                                        from "../components/SearchBar";
+import { useState }      from "react";
+import {
+    StyleSheet, View, Text, Image,
+    TouchableOpacity, FlatList,
+    Modal, TouchableHighlight
+}                        from "react-native";
+import { Card }          from "../components/Card";
+import { FindCityModal } from "../components/FindCityModal";
+import { Header }        from "../components/Header";
+import { useNavigate }   from "react-router-native";
+import { globalStyles }  from "../globalStyles";
+import { SearchBar }     from "../components/SearchBar";
 
 export const Cities = () => {
     const navigator = useNavigate();
@@ -22,20 +26,13 @@ export const Cities = () => {
     ]);
 
     function renderCard({ item }) {
-        /**
-         * {
-            name: city.name,
-            nameRu: city.local_names?.ru,
-            lat: city.lat,
-            lon: city.lon,
-            country: city.country
-
-         */
         return (
-            <Card title={ item.nameRu ? item.nameRu : item.name }
-                  description={ item.country }>
-                {/*<Text style={ globalStyles.h2 }>{ item.temp } °C</Text>*/ }
-            </Card>
+            <TouchableHighlight>
+                <Card title={ item.nameRu ? item.nameRu : item.name }
+                      description={ item.country }>
+                    {/*<Text style={ globalStyles.h2 }>{ item.temp } °C</Text>*/ }
+                </Card>
+            </TouchableHighlight>
         )
     }
 

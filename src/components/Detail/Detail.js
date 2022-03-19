@@ -1,8 +1,9 @@
-import { StyleSheet, View } from "react-native";
-import { DetailItem }       from "./DetailItem";
-import * as lang            from "../../ru.json";
-import { useContext }       from "react";
-import { WeatherContext }   from "../../context";
+import { StyleSheet, View }                from "react-native";
+import { weatherService }                  from "../../services/global";
+import { WeatherService }                  from "../../services/WeatherService";
+import { DetailItem }                      from "./DetailItem";
+import * as lang                           from "../../ru.json";
+import { useEffect, useState } from "react";
 
 const measureList = {
     feels_like: '°C',
@@ -12,17 +13,24 @@ const measureList = {
 }
 
 export const Detail = () => {
-    const { main, wind } = useContext(WeatherContext);
+    const [weather, setWeather] = useState(WeatherService.weatherPattern);
+
+    useEffect(() => {
+        setWeather(weatherService.weather);
+        weatherService.subscribeToUpdates(setWeather);
+
+        return () => weatherService.unsubscribeUpdates(setWeather);
+    }, [])
 
     return (
         <View style={ styles.body }>
             { [ 'feels_like', 'humidity', 'pressure' ].map(name => (
-                <DetailItem value={ main[name] }
+                <DetailItem value={ weather.main[name] }
                             title={ lang[name] }
                             measure={ measureList[name] }
                             key={ name + '_detailitem' }/>
             )) }
-            <DetailItem value={ wind.speed }
+            <DetailItem value={ weather.wind.speed }
                         title={ lang['wind_speed'] }
                         measure={ measureList.wind_speed }/>
         </View>

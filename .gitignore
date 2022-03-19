@@ -1,12 +1,12 @@
 node_modules/
 .expo/
 dist/
+.idea/
 npm-debug.*
 *.jks
 *.p8
 *.p12
 *.key
-*.idea
 *.mobileprovision
 *.orig.*
 web-build/
