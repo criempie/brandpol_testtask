@@ -65,7 +65,7 @@ export class WeatherService {
     /**
      * Получение погоды по данным координатам
      */
-    updateWeather() {
+    updateWeather = () => {
         return new Promise((resolve, reject) => {
             axios.get(WeatherService.#urlAPI, {
                 params: {
