@@ -64,7 +64,7 @@ export const FindCityModal = ({ onSelect }) => {
     return (
         <View style={ styles.container }>
             <View style={ styles.cardContainer }>
-                <SearchBar ref={ searchBarRef } onEndEditing={ e => setCityString(e.nativeEvent.text) }/>
+                <SearchBar ref={ searchBarRef } onChangeText={ e => setCityString(e) }/>
                 <FlatList data={ supposeCities }
                           renderItem={ renderCard }
                           keyExtractor={ (city) => city.lat + city.lon }/>

@@ -1,12 +1,28 @@
-import * as Location from "expo-location";
+import axios                              from "axios";
+import * as Location                      from "expo-location";
+import { getCurrentCityFromAsyncStorage } from "../utils";
 
 export class GeoService {
     #coords;
     #coordsFormatted;
     #subscribedFunctions;
 
+    static #urlAPI = "http://api.openweathermap.org/geo/1.0/reverse";
+    static #keyAPI = "c620e70db8c6dd36dc1e728ce583d185";
+
     constructor() {
         this.#subscribedFunctions = [];
+        getCurrentCityFromAsyncStorage(city => {
+            if (city) {
+                this.#coords = {
+                    latitude: city.lat,
+                    longitude: city.lon
+                };
+                this.#coordsFormatted = GeoService.#coordsFormat(this.#coords);
+            } else {
+                this.updateCurrentLocation();
+            }
+        })
     }
 
     set coords(coords) {
@@ -44,6 +60,17 @@ export class GeoService {
         })
 
         return coords;
+    }
+
+    static async getCityByCoords(coords) {
+        return (await axios.get(this.#urlAPI, {
+            params: {
+                lat: coords.latitude,
+                lon: coords.longitude,
+                appid: this.#keyAPI,
+                limit: 1
+            }
+        })).data;
     }
 
     subscribeToUpdates(func) {

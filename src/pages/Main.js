@@ -1,16 +1,15 @@
-import { Header }                                                                      from "../components/Header";
-import { Temperature }                                                                 from "../components/Temperature";
-import { Detail }                                                                      from "../components/Detail/Detail";
-import { useEffect, useState }                                                         from "react";
-import { Loader }                                                                      from "../components/Loader";
+import { Header }                                      from "../components/Header";
+import { Temperature }                                 from "../components/Temperature";
+import { Detail }                                      from "../components/Detail/Detail";
+import { useEffect, useState }                         from "react";
+import { Loader }                                      from "../components/Loader";
 import { Button, Image, Text, TouchableOpacity, View } from "react-native";
-import { useNavigate }                                                                 from "react-router-native";
-import { globalStyles }               from "../globalStyles";
-import { geoService, weatherService } from "../services/global";
-import { WeatherService }             from "../services/WeatherService";
+import { useNavigate }                                 from "react-router-native";
+import { globalStyles }                                from "../globalStyles";
+import { weatherService }                  from "../services/global";
+import { WeatherService }                              from "../services/WeatherService";
 
 export const Main = () => {
-    const [ coords, setCoords ] = useState();
     const [ loader, setLoader ] = useState(false);
 
     const [ weather, setWeather ] = useState(WeatherService.weatherPattern);
@@ -18,22 +17,13 @@ export const Main = () => {
     const navigator = useNavigate();
 
     useEffect(() => {
-        geoService.updateCurrentLocation();
-    }, [])
-
-    useEffect(() => {
         weatherService.subscribeToUpdates(setWeather);
+        if (weatherService.weather) {
+            setWeather(weatherService.weather);
+        }
 
         return () => weatherService.unsubscribeUpdates(setWeather);
     }, [])
-
-    useEffect(() => {
-        if (coords) {
-            weatherService.coords = coords;
-        }
-    }, [ coords ])
-
-
 
     return (
         <>
@@ -43,7 +33,7 @@ export const Main = () => {
                 </TouchableOpacity>
                 { <Text style={ globalStyles.h1 }>{ weather.name }</Text> }
                 <View style={ globalStyles.icon }/>
-                <Button title={"update"} onPress={weatherService.updateWeather} />
+                <Button title={ "update" } onPress={ weatherService.updateWeather }/>
             </Header>
             {/*исправить "|| !weather.main.temp" когда появится хранилище*/ }
             { loader || !weather.main.temp
