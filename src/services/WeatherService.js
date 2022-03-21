@@ -12,18 +12,6 @@ export class WeatherService {
         this.#subscribedFunctions = [];
 
         geoService.subscribeToUpdates(this.#setCoords.bind(this));
-        getCurrentCityFromAsyncStorage(city => {
-            if (city) {
-                this.#coords = {
-                    latitude: city.lat,
-                    longitude: city.lon
-                };
-            } else {
-                this.#coords = geoService.coords;
-            }
-
-            this.updateWeather();
-        });
     };
 
     static #urlAPI = "https://api.openweathermap.org/data/2.5/weather";

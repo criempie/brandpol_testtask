@@ -12,16 +12,26 @@ export class GeoService {
 
     constructor() {
         this.#subscribedFunctions = [];
-        getCurrentCityFromAsyncStorage(city => {
-            if (city) {
-                this.#coords = {
-                    latitude: city.lat,
-                    longitude: city.lon
-                };
-                this.#coordsFormatted = GeoService.#coordsFormat(this.#coords);
-            } else {
-                this.updateCurrentLocation();
-            }
+        Location.requestForegroundPermissionsAsync();
+        this.#initCoords()
+            .then(this.sendUpdatesToSubscribes.bind(this))
+    }
+
+    #initCoords() {
+        return new Promise((resolve, reject) => {
+            getCurrentCityFromAsyncStorage(city => {
+                if (city) {
+                    this.#coords = {
+                        latitude: city.lat,
+                        longitude: city.lon
+                    };
+                    this.#coordsFormatted = GeoService.#coordsFormat(this.#coords);
+                    resolve(this.#coordsFormatted);
+                } else {
+                    this.updateCurrentLocation()
+                        .then(resolve);
+                }
+            })
         })
     }
 
@@ -39,9 +49,10 @@ export class GeoService {
         const { granted } = await Location.requestForegroundPermissionsAsync();
 
         if (granted) {
-            this.#coords = (await Location.getCurrentPositionAsync()).coords;
+            this.#coords = (await Location.getCurrentPositionAsync({ enableHighAccuracy: true })).coords;
             this.#coordsFormatted = GeoService.#coordsFormat(this.#coords);
             this.sendUpdatesToSubscribes();
+            return this.#coordsFormatted;
 
         } else {
             console.warn("Не выданы разрешения для геолокации.");
